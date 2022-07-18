@@ -1,12 +1,17 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:login/navigator/routing_constants.dart';
 import 'package:login/widgets/responsive.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/user_provider.dart';
+import '../../constants/instances.dart';
+import '../../models/user_provider.dart';
 
 class LoginInScreen extends StatelessWidget {
   const LoginInScreen({
@@ -293,22 +298,38 @@ Widget _formLogin(BuildContext context) {
       );
     },
     actions: [
-      AuthStateChangeAction<SignedIn>((context, state) async {
-        var r = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(state.user?.uid)
-            .set({
-          'name': state.user?.displayName,
-          'email': state.user?.email,
-          'photoUrl': state.user?.photoURL,
-          'id': state.user?.uid,
-        });
-        final _firestore = FirebaseFirestore.instance;
-        DocumentSnapshot documentSnapshot =
-            await _firestore.collection('users').doc(state.user?.uid).get();
-        Provider.of<UserProvider>(context, listen: false)
-            .setData(doc: documentSnapshot);
-      }),
+      AuthStateChangeAction<SignedIn>(
+        (context, state) async {
+          try {
+            await usersCollection.doc(state.user?.uid).set({
+              'name': state.user?.displayName,
+              'email': state.user?.email,
+              'photoUrl': state.user?.photoURL,
+              'id': state.user?.uid,
+            });
+            final _firestore = FirebaseFirestore.instance;
+            DocumentSnapshot documentSnapshot =
+                await _firestore.collection('users').doc(state.user?.uid).get();
+            Provider.of<UserProvider>(context, listen: false)
+                .setData(doc: documentSnapshot);
+            if (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android) {
+              final SharedPreferences prefs =
+                  await SharedPreferences.getInstance();
+              await prefs.setBool('isLoggedIn', true);
+            }
+            showToast('Welcome ${state.user?.displayName}');
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              rootPageRoute,
+              (route) => false,
+            );
+          } catch (e) {
+            showToast(e.toString());
+            log(e.toString());
+          }
+        },
+      ),
     ],
   );
   // Column(

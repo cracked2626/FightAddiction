@@ -1,32 +1,28 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutterfire_ui/firestore.dart';
 
-import '../models/user_provider.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/custom_tab_bar.dart';
-import '../widgets/responsive.dart';
+import '../constants/indicator.dart';
+import '../constants/instances.dart';
+import '../models/feed.dart';
+import '../util/theme_data.dart';
+import '../widgets/story_widget.dart';
 
-class RootPage extends StatefulWidget {
-  const RootPage({
-    Key? key,
-  }) : super(key: key);
-
+class HomeScreen extends StatefulWidget {
   @override
-  State<RootPage> createState() => _RootPageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _RootPageState extends State<RootPage> {
-  final List<Widget> _screens = [
-    HomeScreen(),
-    Scaffold(),
-  ];
-  final List<IconData> _icons = const [
-    Icons.home,
-    Icons.ondemand_video,
-  ];
-  int _selectedIndex = 0;
-
+class _HomeScreenState extends State<HomeScreen> {
+  final queryPost = storiesCollection.withConverter(
+    fromFirestore: (snapshot, _) {
+      return Feed.fromJson(snapshot.data()!);
+    },
+    toFirestore: (data, _) => Feed().toJson(),
+  );
+  // flag for last document from where next 10 records to be fetched
+  ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -34,52 +30,63 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-    return DefaultTabController(
-      length: _icons.length,
-      child: Scaffold(
-        appBar: Responsive.isDesktop(context)
-            ? PreferredSize(
-                preferredSize: Size(screenSize.width, 100.0),
-                child: CustomAppBar(
-                  currentUser: null,
-                  icons: _icons,
-                  selectedIndex: _selectedIndex,
-                  onTap: (index) => setState(() => _selectedIndex = index),
-                ),
-              )
-            : null,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _screens,
-        ),
-        bottomNavigationBar: !Responsive.isDesktop(context)
-            ? Container(
-                padding: const EdgeInsets.only(bottom: 12.0),
+    return Scaffold(
+      backgroundColor: lightWhite,
+      body: Row(
+        children: [
+          showFeed(),
+          Expanded(
+            flex: 4,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
                 color: Colors.white,
-                child: CustomTabBar(
-                  icons: _icons,
-                  selectedIndex: _selectedIndex,
-                  onTap: (index) => setState(() => _selectedIndex = index),
-                ),
-              )
-            : const SizedBox.shrink(),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: shadow,
+              ),
+              padding: EdgeInsets.only(top: 50),
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            FirebaseAuth.instance.signOut();
+  Expanded showFeed() {
+    return Expanded(
+      flex: 5,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 15.0,
+          vertical: 2.0,
+        ),
+        child: FirestoreListView<Feed>(
+          pageSize: 2,
+          loadingBuilder: (BuildContext context) {
+            return Center(child: showDotIndicator(color: Colors.blue));
           },
-          child: Text(
-              '${Provider.of<UserProvider>(context, listen: false).email ?? 'Sign Out'}'),
+          query: queryPost,
+          controller: _scrollController,
+          errorBuilder:
+              (BuildContext context, Object object, StackTrace stackTrace) {
+            return Center(
+              child: Text(object.toString()),
+            );
+          },
+          itemBuilder: (BuildContext context, QueryDocumentSnapshot<Feed> doc) {
+            Feed data = doc.data();
+            return StoryWidget(
+              userName: data.userName,
+              email: data.email,
+              userId: data.userId,
+              story: data.story,
+              isAnonymous: data.isAnonymous,
+              heading: data.heading,
+              timestamp: data.timestamp,
+              length: data.length,
+              storyId: data.storyId,
+            );
+          },
         ),
       ),
     );

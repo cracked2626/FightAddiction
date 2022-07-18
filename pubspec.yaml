@@ -28,7 +28,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   google_fonts: ^2.0.0
-  fireflutter: ^0.2.24
+#  fireflutter: ^0.2.24
   flutterfire_ui: ^0.4.2+2
   cloud_firestore: ^3.2.1
   firebase_auth: ^3.4.1
@@ -37,6 +37,23 @@ dependencies:
 #  firebase_core_desktop: ^1.0.0
 #  firebase_auth_desktop: ^1.0.0
   provider: ^6.0.3
+  shared_preferences: ^2.0.15
+  oktoast: ^3.2.0
+  zefyrka: ^1.3.0
+  url_launcher: ^6.1.5
+  fade_shimmer: ^2.0.1
+#  zefyr:
+#    git:
+#      url: https://github.com/jotshq/zefyr.git
+#      path: packages/zefyr
+  loading_indicator: ^3.1.0
+  flutter_svg: ^1.1.1+1
+
+
+
+
+
+
 
 dev_dependencies:
   flutter_test:
@@ -54,8 +71,22 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/icons/
     - assets/images/
     - assets/google_fonts/
+  fonts:
+    - family: Satoshi
+      fonts:
+        - asset: assets/fonts/Satoshi-Black.otf
+        - asset: assets/fonts/Satoshi-BlackItalic.otf
+        - asset: assets/fonts/Satoshi-Bold.otf
+        - asset: assets/fonts/Satoshi-BoldItalic.otf
+        - asset: assets/fonts/Satoshi-Italic.otf
+        - asset: assets/fonts/Satoshi-Light.otf
+        - asset: assets/fonts/Satoshi-LightItalic.otf
+        - asset: assets/fonts/Satoshi-Medium.otf
+        - asset: assets/fonts/Satoshi-MediumItalic.otf
+        - asset: assets/fonts/Satoshi-Regular.otf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

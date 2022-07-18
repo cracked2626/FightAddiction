@@ -23,13 +23,13 @@ class CustomTabBar extends StatelessWidget {
         border: isBottomIndicator
             ? Border(
                 bottom: BorderSide(
-                  color: Palette.facebookBlue,
+                  color: facebookBlue,
                   width: 3.0,
                 ),
               )
             : Border(
                 top: BorderSide(
-                  color: Palette.facebookBlue,
+                  color: facebookBlue,
                   width: 3.0,
                 ),
               ),
@@ -41,9 +41,7 @@ class CustomTabBar extends StatelessWidget {
                 Tab(
                   icon: Icon(
                     e,
-                    color: i == selectedIndex
-                        ? Palette.facebookBlue
-                        : Colors.black45,
+                    color: i == selectedIndex ? facebookBlue : Colors.black45,
                     size: 30.0,
                   ),
                 ),
