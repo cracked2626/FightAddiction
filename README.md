@@ -1,3 +1,3 @@
 # Fight Addiction Login Page
 
-![Capture](https://user-images.githubusercontent.com/37796466/111074041-e6eb8680-8513-11eb-9d17-98af2c43f994.PNG)
+<img width="1422" alt="Screenshot 2024-04-17 at 9 32 04 AM" src="https://github.com/cracked2626/FightAddiction/assets/92626479/d536ec06-d327-4976-bc83-6e1b0ee70efd">
